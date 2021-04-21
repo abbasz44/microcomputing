@@ -1,0 +1,75 @@
+00008000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 2020-12-07 4:35:18 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :Lab 6
+00000000                             3  * Written by :Zachery Abbas
+00000000                             4  * Date       :2020-11-03
+00000000                             5  * Description:display remainder
+00000000                             6  *-----------------------------------------------------------
+00000000  =00000008                  7  nOffset           EQU      8
+00000000  =FFFFFFFE                  8  quotientOffset    EQU     -2
+00000000  =FFFFFFFC                  9  remainderOffset   EQU     -4
+00000000                            10      
+00008000                            11          ORG    $8000
+00008000  43F9 00009000             12  main    LEA     MSG,A1              ;initalize pointer to string
+00008006  303C 000E                 13          MOVE    #14,D0              ;print string is task 14
+0000800A  4E4F                      14          TRAP    #15                 ;system call
+0000800C  303C 0004                 15          MOVE    #4,D0               ;read integer from keyboard is task 4
+00008010  4E4F                      16          TRAP    #15                 ;get value of n
+00008012  3F01                      17          MOVE.W  D1,-(A7)            ;pass n to the stack
+00008014  6100 000A                 18          BSR     display
+00008018  4FEF 0002                 19          LEA     2(A7),A7
+0000801C                            20          
+0000801C                            21   
+0000801C                            22  * Put program code here
+0000801C  FFFF FFFF                 23      SIMHALT             ; halt simulator
+00008020                            24  
+00008020                            25  * Put variables and constants here
+00008020                            26  display
+00008020  4E56 FFFC                 27          LINK    A6, #-4
+00008024  4282                      28          CLR.L   D2
+00008026  48E7 B000                 29          MOVEM.L  D0/D2-D3,-(A7)    ;save working registers
+0000802A  342E 0008                 30          MOVE.W  8(A6),D2      
+0000802E                            31          
+0000802E  B47C 0000                 32          CMP     #0,D2                ;if !n?
+00008032  6700 0028                 33          BEQ     DONE                 ;no
+00008036                            34  
+00008036  48C2                      35          EXT.L   D2
+00008038  85FC 000A                 36          DIVS    #10, D2
+0000803C  3D42 FFFC                 37          MOVE.W  D2,-4(A6)           ;store quotient
+00008040  4842                      38          SWAP    D2
+00008042  3D42 FFFE                 39          MOVE.W  D2,-2(A6)           ;store remainder
+00008046  3F2E FFFC                 40          MOVE.W -4(A6),-(A7)
+0000804A  61D4                      41          BSR     display
+0000804C  4FEF 0002                 42          LEA     2(A7),A7
+00008050                            43          
+00008050  362E FFFE                 44          MOVE.W -2(A6),D3
+00008054  303C 0003                 45          MOVE    #3,D0               ;display integer is task 3
+00008058  2203                      46          MOVE.L D3,D1
+0000805A  4E4F                      47          TRAP    #15                 ;system call
+0000805C                            48          
+0000805C  4CDF 000D                 49  DONE    MOVEM.L  (A7)+,D0/D2-D3     ;restore working register               
+00008060  4E5E                      50          UNLK    A6                  ;deallocate stack frame
+00008062  4E75                      51          RTS                         ;return value of factorial(n) in D1
+00008064                            52  
+00008064                            53  
+00009000                            54          ORG $9000
+00009000= 45 6E 74 65 72 20 ...     55  MSG     DC.B 'Enter n: ',0
+0000900A                            56      END    main        
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+DISPLAY             8020
+DONE                805C
+MAIN                8000
+MSG                 9000
+NOFFSET             8
+QUOTIENTOFFSET      FFFFFFFE
+REMAINDEROFFSET     FFFFFFFC
